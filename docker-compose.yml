@@ -1,0 +1,47 @@
+version: '3'
+services:
+
+  db:
+    build: ./db
+    container_name: devops-db
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - devops_default
+
+
+  nginx:
+    build: 
+      context: .
+      dockerfile: ./nginx/Dockerfile
+    depends_on:
+      - calculator
+    ports:
+      - 8081:80
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./TestClient/dist/.:/etc/dist/.
+
+  calculator:
+    image: acebiscuits/devops-app:latest
+    #build: ./TestServer
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Postgre: "Host=db;User Id=devops;Password=devops;Database=devops;Port=5432;Pooling=false"
+    depends_on:
+      - db
+    networks:
+      - devops_default
+
+volumes:
+  db_data: 
+
+networks:
+  devops_default:
+    driver: bridge
