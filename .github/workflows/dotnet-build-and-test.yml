@@ -18,8 +18,10 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 8.0.x
-    - name: Restore dependencies
+    - name: Restore dependencies for TestServer
       run: dotnet restore ./TestServer/TestServer.csproj
+    - name: Restore dependencies for TestServerTests
+      run: dotnet restore ./TestServerTests/TestServerTests.csproj
     - name: Build TestServer
       run: dotnet build --no-restore TestServer
     - name: Build TestServerTests
